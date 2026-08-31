@@ -1,44 +1,35 @@
-# Sprint 1: Passive Network Discovery & Live Inventory 
+# Sprint 1: Network Discovery & Hybrid Architecture 
 
-## Overview (What & Why?)
-Since our physical Raspberry Pi edge hardware is still on the way, we have prepared and structured all the foundational code, database schemas, and automation scripts for **Sprint 1**. 
-
-The goal of this sprint is to achieve **Passive Network Discovery**. This allows our edge appliance ("Asas") to automatically scan the local network, identify connected devices (smartphones, laptops, IoT sensors), and track them without requiring any software installation on the user's devices.
+> **Status:** All core scripts, database schemas, and automation tools are fully written and prepared. Execution will start immediately once the physical Raspberry Pi 5 hardware arrives.
 
 ---
 
-## Files & Implementation Guide
+## Overview & Architectural Rationale (Why Hybrid?)
+The primary goal of this sprint is to build an instant and accurate device inventory. However, **pure passive listening is insufficient at startup** because idle or sleeping IoT devices (like smart sensors and printers) send no traffic for hours, leaving the dashboard empty. 
 
-Here is what each file in this repository does and how we plan to execute it once the hardware arrives:
-
-### 1. `discovery.py` (The Core Script)
-* **What it is:** The main Python script that acts as the brain for network discovery.
-* **Why we built it:** It combines fast network scanning tools to find active devices efficiently.
-* **How it works (Implementation Plan):**
-  * It triggers **`arp-scan`** to instantly map out all active IP and MAC addresses on the local subnet.
-  * For any **new** device detected, it runs a deeper **`nmap`** scan to figure out its device type and OS details (Vendor/Fingerprinting).
-  * It automatically updates a local database with the live status (`Online`/`Offline`).
-
-### 2. `setup.sh` (Automation Script)
-* **What it is:** A simple Bash script for automated environment setup.
-* **Why we built it:** To avoid manual, error-prone terminal commands during deployment.
-* **How it works:** Once we boot up our Raspberry Pi OS, running this script will automatically update the system packages and install the required networking utilities (`nmap` and `arp-scan`) with a single command.
-
-### 3. `schema.sql` (Database Blueprint)
-* **What it is:** The structural blueprint for our local database.
-* **Why we built it:** To maintain a clean, organized, and lightweight data structure.
-* **How it works:** It defines the SQLite database tables (`devices`) designed to securely store device attributes (IP, MAC, Vendor, and timestamps) so the backend can easily fetch them later for our mobile app.
-
-### 4. `.gitignore` (Security & Cleanliness)
-* **What it is:** A configuration file for Git.
-* **Why we built it:** To keep our GitHub repository clean and secure.
-* **How it works:** It ensures that local cache files and local SQLite database files (which contain real device data) are never accidentally uploaded to the public or shared repository.
+To solve this, "Asas" relies on an engineered **Two-Phase Hybrid Architecture**:
+1. **Phase 1 - Initial Active Discovery (Boot-up):** A fast, lightweight active sweep using `arp-scan` and `nmap` instantly forces all connected devices to respond, building an immediate baseline inventory and overcoming the sleeping IoT problem.
+2. **Phase 2 - Continuous Passive Monitoring:** Once the initial inventory is established, active scanning stops completely. The system shifts 100% to silent, passive monitoring to track behavior without disrupting the network.
 
 ---
 
-##  How We Will Run It (Next Steps)
-Once the Raspberry Pi hardware arrives, our execution steps will be:
-1. Clone this repository onto the Raspberry Pi.
-2. Run the automated setup script:
+##  Repository Contents
+
+| File Name | Purpose / What it does |
+| :--- | :--- |
+| **`discovery.py`** | The core Python script executing our hybrid logic. It uses `arp-scan` for fast subnet mapping and integrates **built-in MAC vendor lookup and OS fingerprinting** to accurately detect device types. |
+| **`setup.sh`** | An automated Bash script to quickly update system packages and install required network tools (`nmap` and `arp-scan`) on the edge device. |
+| **`schema.sql`** | The SQL blueprint defining the structure of the lightweight `SQLite` database (`devices` table) to store IP, MAC, Vendor, and timestamps. |
+| **`.gitignore`** | Configured to prevent local database files (`*.db`) and python cache from being tracked or uploaded to GitHub. |
+
+---
+
+##  Execution Plan (Upon Hardware Arrival)
+
+1. **Clone the Repository:**
+   Download the project files onto your Raspberry Pi edge device.
+
+2. **Run the Setup Script:**
+   Execute the automated installation script to update system packages and install networking tools:
    ```bash
    bash setup.sh
