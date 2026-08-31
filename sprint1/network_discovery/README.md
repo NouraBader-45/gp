@@ -17,7 +17,10 @@
 
 ##  Execution Plan (Upon Hardware Arrival)
 
-1. **Clone & Setup:**
-   Run the automated installation script on the Raspberry Pi OS:
+1. **Clone the Repository:**
+   Download the project files onto Raspberry Pi edge device.
+
+2. **Run the Setup Script:**
+   Execute the automated installation script to update system packages and install networking tools:
    ```bash
    bash setup.sh
