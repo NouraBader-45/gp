@@ -7,7 +7,7 @@
 ## Overview & Architectural Rationale (Why Hybrid?)
 The primary goal of this sprint is to build an instant and accurate device inventory. However, **pure passive listening is insufficient at startup** because idle or sleeping IoT devices (like smart sensors and printers) send no traffic for hours, leaving the dashboard empty. 
 
-To solve this, "Asas" relies on an engineered **Two-Phase Hybrid Architecture**:
+To solve this, "Assas" relies on an engineered **Two-Phase Hybrid Architecture**:
 1. **Phase 1 - Initial Active Discovery (Boot-up):** A fast, lightweight active sweep using `arp-scan` and `nmap` instantly forces all connected devices to respond, building an immediate baseline inventory and overcoming the sleeping IoT problem.
 2. **Phase 2 - Continuous Passive Monitoring:** Once the initial inventory is established, active scanning stops completely. The system shifts 100% to silent, passive monitoring to track behavior without disrupting the network.
 
