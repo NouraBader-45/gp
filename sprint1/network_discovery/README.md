@@ -1,13 +1,13 @@
-# Sprint 1: Passive Network Discovery & Live Inventory 🔍
+# Sprint 1: Passive Network Discovery & Live Inventory 
 
-## 📌 Overview (What & Why?)
+##  Overview (What & Why?)
 Since our physical Raspberry Pi edge hardware is still on the way, we have prepared and structured all the foundational code, database schemas, and automation scripts for **Sprint 1**. 
 
 The goal of this sprint is to achieve **Passive Network Discovery**. This allows our edge appliance ("Asas") to automatically scan the local network, identify connected devices (smartphones, laptops, IoT sensors), and track them without requiring any software installation on the user's devices.
 
 ---
 
-## 📂 Files & Implementation Guide
+## Files & Implementation Guide
 
 Here is what each file in this repository does and how we plan to execute it once the hardware arrives:
 
@@ -36,7 +36,7 @@ Here is what each file in this repository does and how we plan to execute it onc
 
 ---
 
-## 🚀 How We Will Run It (Next Steps)
+## How We Will Run It (Next Steps)
 Once the Raspberry Pi hardware arrives, our execution steps will be:
 1. Clone this repository onto the Raspberry Pi.
 2. Run the automated setup script:
