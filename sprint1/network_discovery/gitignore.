@@ -1,0 +1,7 @@
+# Ignore local database files
+*.db
+rasidnet_inventory.db
+
+# Ignore Python cache
+__pycache__/
+*.pyc
