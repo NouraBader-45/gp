@@ -26,6 +26,7 @@ The Real-Time Network Monitoring feature continuously monitors mirrored local ne
 The feature may extract selected information such as:
 
 - Source and destination addresses
+- Source and destination ports
 - Network protocol
 - Packet counts
 - Traffic volume
@@ -41,12 +42,15 @@ The Signature-Based Threat Detection feature integrates Suricata IDS to analyze 
 
 The prototype will validate a selected set of known or rule-matching security activities supported by the configured Suricata rules.
 
+The project will use Suricata as an existing intrusion-detection engine rather than developing a custom signature-based IDS from scratch.
+
 ---
 
 ## 3. System Flow
 
 The general system flow is:
 
+```text
 Local Network Devices
         ↓
 Managed Switch
@@ -57,14 +61,16 @@ Raspberry Pi
         ↓
 Real-Time Network Monitoring
         ↓
-Traffic Processing
+Internal Traffic Processing
         ↓
-Traffic Information / Statistics
+Required Traffic Information
         ↓
 Backend / Storage
+```
 
 The same monitored traffic will also be analyzed through:
 
+```text
 Mirrored Network Traffic
         ↓
 Suricata IDS
@@ -76,8 +82,11 @@ Security Alert
 Structured Security Event
         ↓
 Backend / Storage
+```
 
 Traffic processing is therefore an internal implementation step of Real-Time Network Monitoring rather than a separate product feature.
+
+The Raspberry Pi receives a copy of selected network traffic through port mirroring and is not required to operate as an inline gateway for monitored devices.
 
 ---
 
@@ -102,12 +111,16 @@ After validating the network environment, the system will:
 
 1. Receive live mirrored network traffic.
 2. Continuously observe network activity.
-3. Process the received traffic using existing traffic-processing tools.
+3. Process the received traffic using existing traffic-processing technologies when required.
 4. Extract the monitoring information required by the system.
 5. Convert the required information into a structured format.
 6. Make the resulting monitoring information available to backend and user-interface components.
 
 The project will not implement low-level packet-capture functionality from scratch.
+
+A preliminary Python implementation is included in `traffic_monitor.py` to demonstrate that live network traffic can be captured and selected packet information can be processed programmatically.
+
+More detailed traffic or flow processing will be added only if required by later system components. The appropriate processing tool will be selected after practical validation.
 
 ### 4.3 Suricata IDS Integration
 
@@ -124,6 +137,8 @@ The signature-based detection component will be implemented by:
 9. Converting generated alerts into the project's structured security-event format.
 10. Making the security-event information available to later components.
 
+A preliminary implementation is included in `suricata_alert_parser.py` to demonstrate how Suricata EVE JSON alerts can be read and converted into structured security-event data.
+
 ---
 
 ## 5. Build vs. Existing Technology Decision
@@ -137,7 +152,7 @@ The project's implementation work will focus on:
 - Network configuration
 - Continuous monitoring
 - Selection of required traffic information
-- Traffic processing
+- Traffic processing when required
 - Structured output generation
 - Integration with other system components
 
@@ -191,7 +206,7 @@ Monitoring and Suricata-based detection operate locally.
 
 ## 7. Inputs and Outputs
 
-### Real-Time Network Monitoring
+### 7.1 Real-Time Network Monitoring
 
 #### Input
 
@@ -204,6 +219,7 @@ Monitoring and Suricata-based detection operate locally.
 The monitoring component will produce selected structured network information, which may include:
 
 - Source and destination addresses
+- Source and destination ports
 - Protocol information
 - Packet counts
 - Traffic volume
@@ -213,7 +229,7 @@ The monitoring component will produce selected structured network information, w
 
 The final output schema will be determined after implementation validation.
 
-### Signature-Based Threat Detection
+### 7.2 Signature-Based Threat Detection
 
 #### Input
 
@@ -228,6 +244,9 @@ The resulting security-event information may include:
 - Timestamp
 - Source IP
 - Destination IP
+- Source port
+- Destination port
+- Protocol
 - Detection signature
 - Alert category
 - Severity
@@ -238,42 +257,71 @@ The resulting security-event information may include:
 
 The initial technologies considered for Sprint 2 are:
 
-- Raspberry Pi 5
-- Raspberry Pi OS / Linux
-- Managed Switch with Port Mirroring
-- Suricata IDS
-- tcpdump
-- Wireshark
-- Python
+- Raspberry Pi 5 – local edge monitoring and processing
+- Raspberry Pi OS / Linux – operating environment
+- Managed Switch with Port Mirroring – traffic duplication
+- Suricata IDS – signature-based threat detection
+- tcpdump – packet-capture verification
+- Wireshark – traffic inspection and troubleshooting
+- Scapy – preliminary programmatic packet-capture implementation
+- Python – monitoring and integration scripts
 - Traffic-processing tools selected during implementation validation
-- Git and GitHub
+- Git and GitHub – version control and technical documentation
 
-CICFlowMeter may be evaluated for flow-level processing if detailed flow statistics are required by later system components.
-
----
-
-## 9. Planned Implementation Structure
-
-A possible source-code structure is:
-
-edge/
-└── monitoring/
-    ├── capture/
-    ├── processing/
-    ├── suricata/
-    └── tests/
-
-The exact source files will be created after the implementation approach is validated.
-
-Sprint documentation will remain under:
-
-docs/
-└── sprint-2/
-    └── README.md
+CICFlowMeter or NFStream may be evaluated if detailed flow-level processing is required by later system components.
 
 ---
 
-## 10. Testing Plan
+## 9. Preliminary Implementation Files
+
+Preliminary implementation files are included alongside this README to demonstrate the technical feasibility of the proposed approach and to provide a starting reference for later development.
+
+These files are not considered the final Sprint 2 implementation and will be validated and refined during development on the Raspberry Pi environment.
+
+### `traffic_monitor.py`
+
+Provides a preliminary proof of concept for:
+
+- Capturing live network packets
+- Continuously observing network activity
+- Extracting selected basic packet information
+- Producing structured monitoring information
+
+Detailed flow-level processing is intentionally not treated as an independent feature in this version.
+
+### `suricata_alert_parser.py`
+
+Provides a preliminary proof of concept for:
+
+- Reading Suricata EVE JSON output
+- Identifying alert events
+- Extracting relevant alert fields
+- Converting alerts into a simplified structured security-event format
+
+### `requirements.txt`
+
+Lists the Python dependencies required by the current preliminary implementation.
+
+---
+
+## 10. Implementation Structure
+
+The current Sprint 2 structure is:
+
+```text
+sprint2/
+└── real_time_monitoring_and_ids/
+    ├── README.md
+    ├── traffic_monitor.py
+    ├── suricata_alert_parser.py
+    └── requirements.txt
+```
+
+The structure may be expanded during development after the monitoring approach is validated on the Raspberry Pi and the traffic information required by later system components is finalized.
+
+---
+
+## 11. Testing Plan
 
 ### Real-Time Monitoring Tests
 
@@ -309,7 +357,7 @@ The prototype will monitor:
 
 ---
 
-## 11. Acceptance Criteria
+## 12. Acceptance Criteria
 
 Sprint 2 will be considered complete when:
 
@@ -323,19 +371,21 @@ Sprint 2 will be considered complete when:
 
 ---
 
-## 12. Manageability
+## 13. Manageability
 
 Sprint 2 is considered manageable because the project relies on existing technologies for low-level traffic monitoring and signature-based intrusion detection.
 
 The project does not implement a packet-capture engine or IDS engine from scratch.
 
-The main implementation work is limited to network configuration, monitoring integration, traffic processing, Suricata configuration, alert processing, structured data generation, and testing.
+The main implementation work is limited to network configuration, monitoring integration, required traffic processing, Suricata configuration, alert processing, structured data generation, and testing.
 
 The scope will also be limited to the network information required by the project and a representative set of security test scenarios.
 
+The included preliminary implementation files provide an initial proof of concept for packet monitoring and Suricata alert processing. Full validation will be performed in the target Raspberry Pi environment.
+
 ---
 
-## 13. Dependencies
+## 14. Dependencies
 
 Sprint 2 depends on:
 
@@ -346,11 +396,12 @@ Sprint 2 depends on:
 - Network-monitoring tools
 - Suricata IDS
 - Compatible Suricata rules
+- Python and required Python libraries
 - Controlled security-testing environment
 
 ---
 
-## 14. Risks and Limitations
+## 15. Risks and Limitations
 
 The main limitations are:
 
@@ -359,17 +410,19 @@ The main limitations are:
 - Port-mirroring misconfiguration may result in incomplete traffic visibility.
 - Raspberry Pi performance may be affected by high traffic volumes.
 - Monitoring information available to the system depends on the selected processing tools.
+- Detailed flow-level processing may require an additional validated processing tool if later components require such information.
 - The system performs passive monitoring and does not directly block network traffic.
 - The prototype will validate representative security scenarios rather than every possible attack.
 
 ---
 
-## 15. References
+## 16. References
 
 The implementation will rely on approved project references, including:
 
 - Suricata official resources and documentation
 - Raspberry Pi OS documentation
 - tcpdump resources
-- CICFlowMeter resources if flow-level extraction is required
+- Scapy documentation
+- CICFlowMeter or NFStream resources if detailed flow-level processing is required
 - Relevant networking and cybersecurity references listed in the project proposal
