@@ -1,48 +1,45 @@
-# Sprints 3 & 4: Anomaly Detection, Behavioral Baselining & Explainable AI (XAI)
+# Sprints 3 & 4: Technical Scope, Data Ingestion & Custom Implementation Breakdown
 
-This directory contains the initial prototype and development verification artifacts for **Sprint 3 (Intelligence & Anomaly Detection)** and **Sprint 4 (Scoring & Explainability)**.
-
----
-
-## 1. Technical Scope Breakdown
-
-### **Sprint 3: Behavioral Baselining & ML Anomaly Detection**
-* **Objective:** Establish baseline traffic behavior profiles per connected device and train an unsupervised/semi-supervised ML model to isolate anomalous network flows.
-* **Core Tasks:**
-  * Define and validate a unified 5-tuple statistical flow feature vector schema.
-  * Train an `Isolation Forest` ensemble model exclusively on benign baseline distributions.
-  * Evaluate decision boundaries and isolate anomalous/injected attack vectors.
-
-### **Sprint 4: Risk Scoring Engine & Explainable AI (XAI)**
-* **Objective:** Translate raw machine learning decision scores into an intuitive 0–100 risk scale and compute mathematical feature attributions explaining each alert.
-* **Core Tasks:**
-  * Implement the `Dynamic Risk Score Engine (0–100)` to normalize complex decision boundaries for non-technical home users.
-  * Integrate `SHAP (TreeExplainer)` to calculate exact Shapley contribution weights for anomalous flow features.
-  * Format feature explanations into structured JSON payloads for downstream alerting and LLM chatbot translation.
+This document clarifies the prototype implementation scope for **Sprint 3 (Intelligence & Anomaly Detection)** and **Sprint 4 (Scoring & Explainability)**, outlining the separation between foundational tools and custom algorithm logic developed for the project.
 
 ---
 
-## 2. Tools & Workload Classification
+## 1. Dataset Status & Ingestion Notice
 
-| Component | Type | Description / Responsibility |
-| :--- | :--- | :--- |
-| **`scikit-learn`** | Ready-to-Use Library | Foundational implementation of the `IsolationForest` ensemble algorithm. |
-| **`SHAP`** | Ready-to-Use Library | Game-theoretic algorithmic framework for computing Shapley feature contributions. |
-| **`pandas` / `NumPy`** | Ready-to-Use Libraries | Matrix manipulation and structured DataFrame operations. |
-| **`nfstream`** | Ready-to-Use Library | Bidirectional network flow feature extraction engine. |
-| **CIC-IoT2023 & IoT-23** | Public Datasets | Real-world benchmark IoT datasets for offline model baseline training and validation. |
-| **Device Baselining Engine** | Custom Development | Custom algorithmic pipeline constructing per-device (MAC/IP) statistical profiles instead of static global thresholds. |
-| **Risk Scoring Engine** | Custom Development | Proprietary mathematical formula mapping raw model decision boundaries to a 0–100 dynamic risk score. |
-| **XAI Alert Packaging** | Custom Development | Backend data structuring layer extracting top-$N$ SHAP features and packaging them into clean alert payloads. |
+* **CIC-IoT2023 Dataset (`CIC_IOT_Dataset2023/`):**
+  * A lightweight, structured sample (`example.ipynb`) is committed directly to this repository to demonstrate successful ingestion, schema parsing, and feature extraction.
+* **IoT-23 Dataset:**
+  * The full dataset (8.7+ GB) has been successfully acquired, verified, and stored locally in our development environment. 
+  * Due to GitHub repository storage limitations, the raw multi-gigabyte files are kept locally offline and will be loaded dynamically into the preprocessing scripts during local model baseline tuning.
 
 ---
 
-## 3. Directory Structure
+## 2. Standard / Off-the-Shelf Tools & Libraries (Ready-to-Use)
+
+* **`scikit-learn`:** Provides the underlying ensemble architecture (`IsolationForest`) for tree-based anomaly isolation.
+* **`SHAP` (`TreeExplainer`):** Algorithmic framework used to calculate game-theoretic Shapley feature attributions.
+* **`pandas` & `NumPy`:** Core libraries for structured 2D matrix transformations and array manipulation.
+* **`nfstream` / `CICFlowMeter`:** Bidirectional network flow feature extraction engines.
+* **CIC-IoT2023 & IoT-23:** Labeled public IoT benchmark datasets used as references for normal baseline behaviors and modern network attack vectors.
+
+---
+
+## 3. Custom Modules Developed from Scratch (Team Workload)
+
+* **Per-Device Behavioral Baselining:** Custom mathematical modeling to profile each connected endpoint individually (MAC/IP baselines) using normal IoT traffic distributions, avoiding static, one-size-fits-all detection thresholds.
+* **Feature Alignment & Preprocessing:** Custom ETL pipelines normalizing raw network captures into structured 5-tuple statistical flow vectors.
+* **Dynamic Risk Scoring Engine (0–100):** A proprietary mathematical mapping function translating raw `decision_function()` distances into a human-interpretable risk metric for non-technical users.
+* **Automated XAI Interpretation Pipeline:** Custom backend logic extracting the top-$N$ contributing SHAP feature attributions and structuring them into clean JSON payloads for downstream alerting.
+
+---
+
+## 4. Current Directory Structure
 
 ```text
-sprint_3_and_4/
-├── code/
-│   └── sprint3_4_anomaly_detection_and_xai.ipynb   # Verified Jupyter Notebook running detection, scoring & SHAP
-├── data_samples/
-│   └── iot23_sample.log                            # Lightweight sample extracted from IoT-23 benchmark
-└── README.md                                       # Sprint documentation & scope breakdown
+gp/
+└── sprint 3 and 4/
+    ├── CIC_IOT_Dataset2023/
+    │   └── example.ipynb                              # CIC-IoT sample ingestion & feature check
+    ├── code/
+    │   └── sprint3and4_anomaly_detection_shap...ipynb # Verified end-to-end ML & XAI pipeline
+    └── ready_tools_vs_custom_work                     # Scope documentation & implementation note
