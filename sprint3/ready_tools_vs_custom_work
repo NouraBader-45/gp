@@ -1,0 +1,17 @@
+Sprint 3: Scope & Initial Prototype Note
+
+This folder contains a lightweight initial prototype created to verify tool compatibility and test our basic ML pipeline. It is an early proof-of-concept and not the final implementation.
+
+1. Ready-to-Use Libraries & Datasets:
+   • Basic Libraries: scikit-learn, SHAP, pandas, numpy, and nfstream.
+   • Datasets: Downloaded CIC-IoT2023 and IoT-23 datasets.
+
+2. Custom Work (To be developed for the project):
+   • Building per-device behavioral baselines.
+   • Data cleaning and feature mapping for IoT traffic.
+   • Developing the 0–100 risk score formula.
+   • Formatting SHAP explanations into user-friendly alerts.
+
+3. Current Prototype Status:
+   • The current Colab notebook is a simple test run using sample data to make sure the libraries work together.
+   • The actual training on real IoT datasets and model tuning will take place in the upcoming milestones.
