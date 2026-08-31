@@ -117,7 +117,7 @@ The implementation steps are:
 
 An existing packet-capture or flow-processing tool will be used for low-level traffic processing instead of implementing a packet-capture engine from scratch.
 
-CICFlowMeter will be evaluated as a possible tool for generating flow-level statistics. The final processing tool will be selected after practical validation with the Raspberry Pi environment.
+CICFlowMeter or NFStream will be evaluated for flow-level traffic processing, and the final tool will be selected based on compatibility and performance on the Raspberry Pi environment.
 
 ### 4.3 Suricata IDS Integration
 
